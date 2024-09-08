@@ -1,0 +1,36 @@
+trigger:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+  # step 1: install python
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '3.x'
+      addToPath: true
+    displayName: 'Install Python'
+
+  # step 2: Install dependencies
+  - script: |
+      python -m pip install --upgrade pip
+      pip install -r requirements.txt
+    displayName: 'Install dependencies'
+
+  # step 3: Run tests
+  - script: |
+      pytest
+    displayName: 'Run Tests'
+
+  # step 4: Code Lint
+  - script: |
+      flake8 .
+    displayName: 'Lint Code'
+
+  # step 5: Application Packaging
+  - script: |
+      python setup.py sdist bdist_wheel
+    displayName: 'Package Application'
